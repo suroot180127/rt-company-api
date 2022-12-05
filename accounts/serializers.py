@@ -1,7 +1,7 @@
 from dataclasses import field
 from pyexpat import model
 from rest_framework import serializers
-from .models import Employee, Department
+from .models import Employee, Department, Project
 from django.db.models import Sum
 
 
@@ -25,3 +25,17 @@ class DepartmentSerializer(serializers.ModelSerializer):
     def get_total_salary(self, obj):
         salary_sum = Employee.objects.filter(department=obj.dept_no).aggregate(Sum('salary'))
         return salary_sum.get('salary__sum')
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ["proj_name","proj_id"]
+
+
+class ProjectFilterSerializer(serializers.ModelSerializer):
+    proj_leader = EmployeeSerializer()
+    proj_employees = EmployeeSerializer(many=True)
+
+    class Meta:
+        model = Project
+        fields = ["proj_leader","proj_employees"]  
